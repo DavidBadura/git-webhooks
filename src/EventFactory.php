@@ -3,6 +3,7 @@
 namespace DavidBadura\GitWebhooks;
 
 use DavidBadura\GitWebhooks\Event\AbstractEvent;
+use DavidBadura\GitWebhooks\Provider\GitlabProvider;
 use DavidBadura\GitWebhooks\Provider\ProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -50,5 +51,15 @@ class EventFactory
         $this->providers[] = $provider;
 
         return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public static function createDefault()
+    {
+        return new self([
+            new GitlabProvider()
+        ]);
     }
 }
