@@ -20,15 +20,17 @@ class GitlabProvider implements ProviderInterface
      */
     public function create(Request $request)
     {
+        $data = $this->getData($request);
+
         switch ($request->headers->get('X-Gitlab-Event')) {
             case 'Push Hook':
-                return $this->createPushEvent($request);
+                return $this->createPushEvent($data);
             case 'Tag Push Hook':
-                return $this->createTagEvent($request);
+                return $this->createTagEvent($data);
             case 'Issue Hook':
-                return $this->createIssueEvent($request);
+                return $this->createIssueEvent($data);
             case 'Merge Request Hook':
-                return $this->createMergeRequestEvent($request);
+                return $this->createMergeRequestEvent($data);
             default:
                 return null;
         }
@@ -44,38 +46,49 @@ class GitlabProvider implements ProviderInterface
     }
 
     /**
-     * @param Request $request
+     * @param array $data
      * @return IssueEvent
      */
-    private function createIssueEvent(Request $request)
+    private function createIssueEvent(array $data)
     {
 
     }
 
     /**
-     * @param Request $request
+     * @param array $data
      * @return MergeRequestEvent
      */
-    private function createMergeRequestEvent(Request $request)
+    private function createMergeRequestEvent(array $data)
     {
 
     }
 
     /**
-     * @param Request $request
+     * @param array $data
      * @return PushEvent
      */
-    private function createPushEvent(Request $request)
+    private function createPushEvent(array $data)
+    {
+
+    }
+
+    /**
+     * @param array $data
+     * @return TagEvent
+     */
+    private function createTagEvent(array $data)
     {
 
     }
 
     /**
      * @param Request $request
-     * @return TagEvent
+     * @return array
      */
-    private function createTagEvent(Request $request)
+    public function getData(Request $request)
     {
+        $body = $request->getContent();
 
+        return json_decode($body, true);
     }
 }
