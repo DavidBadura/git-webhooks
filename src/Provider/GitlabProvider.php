@@ -95,10 +95,6 @@ class GitlabProvider implements ProviderInterface
         $event->repository = $this->createRepository($data['repository']);
         $event->commits    = $this->createCommits($data['commits']);
 
-
-        dump($data);
-        dump($event);
-
         return $event;
     }
 
