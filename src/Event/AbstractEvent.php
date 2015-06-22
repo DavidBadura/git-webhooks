@@ -2,6 +2,7 @@
 
 namespace DavidBadura\GitWebhooks\Event;
 
+use DavidBadura\GitWebhooks\Struct\Project;
 use DavidBadura\GitWebhooks\Struct\User;
 
 /**
@@ -20,7 +21,7 @@ abstract class AbstractEvent
     public $user;
 
     /**
-     * @var int
+     * @var Project
      */
-    public $projectId;
+    public $project;
 }

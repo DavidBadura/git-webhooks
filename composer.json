@@ -16,12 +16,12 @@
         "phpunit/phpunit": "^4.7",
         "symfony/var-dumper": "^2.7"
     },
-    "autoloader": {
+    "autoload": {
         "psr-4": {
             "DavidBadura\\GitWebhooks\\": "src/"
         }
     },
-    "autoloader-dev": {
+    "autoload-dev": {
         "psr-4": {
             "DavidBadura\\GitWebhooks\\": "tests/"
         }
