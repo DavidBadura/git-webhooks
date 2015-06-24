@@ -34,7 +34,6 @@ class GitlabProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('DavidBadura\GitWebhooks\Event\PushEvent', $event);
     }
 
-
     public function testTag()
     {
         $request = $this->createRequest('Tag Push Hook', __DIR__ . '/_files/gitlab/tag.json');
@@ -43,6 +42,16 @@ class GitlabProviderTest extends \PHPUnit_Framework_TestCase
         $event = $provider->create($request);
 
         $this->assertInstanceOf('DavidBadura\GitWebhooks\Event\PushEvent', $event);
+    }
+
+    public function testMergeRequest()
+    {
+        $request = $this->createRequest('Merge Request Hook', __DIR__ . '/_files/gitlab/merge_request.json');
+
+        $provider = new GitlabProvider();
+        $event = $provider->create($request);
+
+        $this->assertInstanceOf('DavidBadura\GitWebhooks\Event\MergeRequestEvent', $event);
     }
 
     /**

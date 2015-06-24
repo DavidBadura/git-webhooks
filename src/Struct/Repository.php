@@ -8,9 +8,19 @@ namespace DavidBadura\GitWebhooks\Struct;
 class Repository
 {
     /**
+     * @var int
+     */
+    public $id;
+
+    /**
      * @var string
      */
     public $name;
+
+    /**
+     * @var string
+     */
+    public $namespace;
 
     /**
      * @var string

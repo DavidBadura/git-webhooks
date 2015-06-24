@@ -7,7 +7,6 @@ use DavidBadura\GitWebhooks\Event\IssueEvent;
 use DavidBadura\GitWebhooks\Event\MergeRequestEvent;
 use DavidBadura\GitWebhooks\Event\PushEvent;
 use DavidBadura\GitWebhooks\Struct\Commit;
-use DavidBadura\GitWebhooks\Struct\Project;
 use DavidBadura\GitWebhooks\Struct\Repository;
 use DavidBadura\GitWebhooks\Struct\User;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,7 +67,39 @@ class GitlabProvider implements ProviderInterface
      */
     private function createMergeRequestEvent(array $data)
     {
+        $event               = new MergeRequestEvent();
+        $event->provider     = self::NAME;
+        $event->id           = $data['object_attributes']['iid'];
+        $event->title        = $data['object_attributes']['title'];
+        $event->description  = $data['object_attributes']['description'];
+        $event->targetBranch = $data['object_attributes']['target_branch'];
+        $event->sourceBranch = $data['object_attributes']['source_branch'];
+        $event->state        = $data['object_attributes']['state'];
+        $event->createdAt    = new \DateTime($data['object_attributes']['created_at']);
+        $event->updatedAt    = new \DateTime($data['object_attributes']['updated_at']);
 
+        $user       = new User();
+        $user->id   = $data['object_attributes']['author_id'];
+        $user->name = $data['user']['name'];
+
+        $targetRepository            = new Repository();
+        $targetRepository->id        = $data['object_attributes']['target_project_id'];
+        $targetRepository->name      = $data['object_attributes']['target']['name'];
+        $targetRepository->namespace = $data['object_attributes']['target']['namespace'];
+        $targetRepository->url       = $data['object_attributes']['target']['ssh_url'];
+
+        $sourceProject            = new Repository();
+        $sourceProject->id        = $data['object_attributes']['source_project_id'];
+        $sourceProject->name      = $data['object_attributes']['source']['name'];
+        $sourceProject->namespace = $data['object_attributes']['source']['namespace'];
+        $sourceProject->url       = $data['object_attributes']['source']['ssh_url'];
+
+        $event->user             = $user;
+        $event->repository       = $targetRepository;
+        $event->sourceRepository = $sourceProject;
+        $event->lastCommit       = $this->createCommit($data['object_attributes']['last_commit']);
+
+        return $event;
     }
 
     /**
@@ -87,29 +118,22 @@ class GitlabProvider implements ProviderInterface
         $user->id   = $data['user_id'];
         $user->name = $data['user_name'];
 
-        $project     = new Project();
-        $project->id = $data['project_id'];
+        if (isset($data['user_email'])) {
+            $user->email = $data['user_email'];
+        }
+
+        $repository              = new Repository();
+        $repository->id          = $data['project_id'];
+        $repository->name        = $data['repository']['name'];
+        $repository->description = $data['repository']['description'];
+        $repository->homepage    = $data['repository']['homepage'];
+        $repository->url         = $data['repository']['url'];
 
         $event->user       = $user;
-        $event->project    = $project;
-        $event->repository = $this->createRepository($data['repository']);
+        $event->repository = $repository;
         $event->commits    = $this->createCommits($data['commits']);
 
         return $event;
-    }
-
-    /**
-     * @param array $data
-     * @return Repository
-     */
-    private function createRepository(array $data)
-    {
-        $repository              = new Repository();
-        $repository->name        = $data['name'];
-        $repository->url         = $data['url'];
-        $repository->description = $data['description'];
-
-        return $repository;
     }
 
     /**
@@ -139,8 +163,9 @@ class GitlabProvider implements ProviderInterface
         $commit->message = $data['message'];
         $commit->date    = new \DateTime($data['timestamp']);
 
-        $user       = new User();
-        $user->name = $data['author']['name'];
+        $user        = new User();
+        $user->name  = $data['author']['name'];
+        $user->email = $data['author']['email'];
 
         $commit->author = $user;
 
