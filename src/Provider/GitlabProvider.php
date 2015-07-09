@@ -9,6 +9,7 @@ use DavidBadura\GitWebhooks\Event\PushEvent;
 use DavidBadura\GitWebhooks\Struct\Commit;
 use DavidBadura\GitWebhooks\Struct\Repository;
 use DavidBadura\GitWebhooks\Struct\User;
+use DavidBadura\GitWebhooks\Util;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -132,6 +133,14 @@ class GitlabProvider implements ProviderInterface
         $event->user       = $user;
         $event->repository = $repository;
         $event->commits    = $this->createCommits($data['commits']);
+
+        $event->type = Util::getPushType($event->ref);
+
+        if ($event->type == PushEvent::TYPE_BRANCH) {
+            $event->branchName = Util::getBranchName($event->ref);
+        } else {
+            $event->tagName = Util::getTagName($event->ref);
+        }
 
         return $event;
     }

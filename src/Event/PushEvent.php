@@ -10,6 +10,9 @@ use DavidBadura\GitWebhooks\Struct\Repository;
  */
 class PushEvent extends AbstractEvent
 {
+    const TYPE_BRANCH = 'branch';
+    const TYPE_TAG    = 'tag';
+
     /**
      * @var string
      */
@@ -24,6 +27,21 @@ class PushEvent extends AbstractEvent
      * @var string
      */
     public $ref;
+
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @var string
+     */
+    public $branchName;
+
+    /**
+     * @var string
+     */
+    public $tagName;
 
     /**
      * @var Repository
