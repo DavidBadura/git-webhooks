@@ -36,7 +36,7 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
 
     public function testTag()
     {
-        $request = $this->createRequest('create', __DIR__ . '/_files/github/tag.json');
+        $request = $this->createRequest('push', __DIR__ . '/_files/github/tag.json');
 
         $provider = new GithubProvider();
         $event = $provider->create($request);
