@@ -67,18 +67,17 @@ class GithubProvider implements ProviderInterface
      */
     private function createMergeRequestEvent(array $data)
     {
-        throw new \Exception('not yet implemented');
-
         $event               = new MergeRequestEvent();
         $event->provider     = self::NAME;
-        $event->id           = $data['object_attributes']['id'];
-        $event->title        = $data['object_attributes']['title'];
-        $event->description  = $data['object_attributes']['description'];
-        $event->targetBranch = $data['object_attributes']['target_branch'];
-        $event->sourceBranch = $data['object_attributes']['source_branch'];
-        $event->state        = $data['object_attributes']['state'];
-        $event->createdAt    = new \DateTime($data['object_attributes']['created_at']);
-        $event->updatedAt    = new \DateTime($data['object_attributes']['updated_at']);
+        $event->id           = $data['pull_request']['id'];
+        $event->title        = $data['pull_request']['title'];
+        $event->description  = $data['pull_request']['body'];
+
+        $event->targetBranch = $data['pull_request']['base']['sha'];
+        $event->sourceBranch = $data['pull_request']['head']['sha'];
+        $event->state        = $data['action'];
+        $event->createdAt    = new \DateTime($data['pull_request']['created_at']);
+        $event->updatedAt    = new \DateTime($data['pull_request']['updated_at']);
 
         $user       = new User();
         $user->id   = $data['object_attributes']['author_id'];

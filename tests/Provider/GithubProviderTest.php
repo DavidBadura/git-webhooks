@@ -44,9 +44,9 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('DavidBadura\GitWebhooks\Event\PushEvent', $event);
     }
 
-    public function testMergeRequest()
+    public function testPullRequest()
     {
-        $request = $this->createRequest('Merge Request Hook', __DIR__ . '/_files/github/merge_request.json');
+        $request = $this->createRequest('pull_request', __DIR__ . '/_files/github/pull_request.json');
 
         $provider = new GithubProvider();
         $event = $provider->create($request);
