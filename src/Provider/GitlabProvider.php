@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @author David Badura <d.a.badura@gmail.com>
  */
-class GitlabProvider implements ProviderInterface
+class GitlabProvider extends AbstractProvider implements ProviderInterface
 {
     const NAME = 'gitlab';
 
@@ -147,24 +147,9 @@ class GitlabProvider implements ProviderInterface
 
     /**
      * @param array $data
-     * @return Commit[]
-     */
-    private function createCommits(array $data)
-    {
-        $result = [];
-
-        foreach ($data as $row) {
-            $result[] = $this->createCommit($row);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $data
      * @return Commit
      */
-    private function createCommit(array $data)
+    protected function createCommit(array $data)
     {
         $commit = new Commit();
 
@@ -179,16 +164,5 @@ class GitlabProvider implements ProviderInterface
         $commit->author = $user;
 
         return $commit;
-    }
-
-    /**
-     * @param Request $request
-     * @return array
-     */
-    private function getData(Request $request)
-    {
-        $body = $request->getContent();
-
-        return json_decode($body, true);
     }
 }
