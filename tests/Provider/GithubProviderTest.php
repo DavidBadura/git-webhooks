@@ -39,6 +39,7 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('changes', $event->branchName);
         $this->assertEquals(null, $event->tagName);
         $this->assertEquals('baxterthehacker', $event->user->name);
+        $this->assertEquals(1, count($event->commits));
     }
 
     public function testTag()
@@ -72,6 +73,7 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('changes', $event->sourceBranch);
         $this->assertEquals('public-repo', $event->repository->name);
         $this->assertEquals('public-repo', $event->sourceRepository->name);
+        $this->assertEquals('0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c', $event->lastCommit->id);
     }
 
     /**
