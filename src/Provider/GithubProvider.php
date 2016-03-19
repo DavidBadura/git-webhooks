@@ -111,7 +111,8 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
         $event->sourceRepository = $this->createRepository($data['pull_request']['head']['repo']);
 
         // TODO request data from $data['pull_request']['commits_url']
-        $event->lastCommit = null;
+        $event->lastCommit     = new Commit();
+        $event->lastCommit->id = $data['pull_request']['head']['sha'];
 
         return $event;
     }
