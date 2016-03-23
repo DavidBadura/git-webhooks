@@ -58,6 +58,8 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test-tag', $event->tagName);
         $this->assertEquals('public-repo', $event->repository->name);
         $this->assertEquals('baxterthehacker', $event->repository->namespace);
+        $this->assertCount(1, $event->commits);
+        $this->assertEquals('0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c', $event->commits[0]->id);
     }
 
     public function testPullRequest()

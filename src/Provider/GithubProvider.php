@@ -73,6 +73,10 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
         $event->repository = $repository;
         $event->commits    = $this->createCommits($data['commits']);
 
+        if (!$event->commits) {
+            $event->commits[] = $this->createCommit($data['head_commit']); // fix empty commits
+        }
+
         $event->type = Util::getPushType($event->ref);
 
         if ($event->type == PushEvent::TYPE_BRANCH) {

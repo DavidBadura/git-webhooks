@@ -2,6 +2,7 @@
 
 namespace DavidBadura\GitWebhooks\Provider;
 
+use DavidBadura\GitWebhooks\Struct\Commit;
 use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractProvider
