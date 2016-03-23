@@ -39,7 +39,9 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('changes', $event->branchName);
         $this->assertEquals(null, $event->tagName);
         $this->assertEquals('baxterthehacker', $event->user->name);
-        $this->assertEquals(1, count($event->commits));
+        $this->assertEquals('public-repo', $event->repository->name);
+        $this->assertEquals('baxterthehacker', $event->repository->namespace);
+        $this->assertCount(1, $event->commits);
     }
 
     public function testTag()
@@ -54,6 +56,8 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('refs/tags/test-tag', $event->ref);
         $this->assertEquals(null, $event->branchName);
         $this->assertEquals('test-tag', $event->tagName);
+        $this->assertEquals('public-repo', $event->repository->name);
+        $this->assertEquals('baxterthehacker', $event->repository->namespace);
     }
 
     public function testPullRequest()
@@ -72,7 +76,9 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('master', $event->targetBranch);
         $this->assertEquals('changes', $event->sourceBranch);
         $this->assertEquals('public-repo', $event->repository->name);
+        $this->assertEquals('baxterthehacker', $event->repository->namespace);
         $this->assertEquals('public-repo', $event->sourceRepository->name);
+        $this->assertEquals('baxterthehacker', $event->sourceRepository->namespace);
         $this->assertEquals('0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c', $event->lastCommit->id);
     }
 

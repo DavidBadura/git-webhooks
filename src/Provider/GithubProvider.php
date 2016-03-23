@@ -64,6 +64,7 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
         $repository              = new Repository();
         $repository->id          = $data['repository']['id'];
         $repository->name        = $data['repository']['name'];
+        $repository->namespace   = $data['repository']['owner']['name'];
         $repository->description = $data['repository']['description'];
         $repository->homepage    = $data['repository']['homepage'];
         $repository->url         = $data['repository']['html_url'];
@@ -128,7 +129,7 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
         $repository->id          = $data['id'];
         $repository->name        = $data['name'];
         $repository->description = $data['description'];
-        $repository->namespace   = $data['full_name'];
+        $repository->namespace   = $data['owner']['login'];
         $repository->url         = $data['ssh_url'];
         $repository->homepage    = $data['html_url'];
 
