@@ -10,9 +10,14 @@ use DavidBadura\GitWebhooks\Struct\Repository;
  */
 class MergeRequestEvent extends AbstractEvent
 {
-    const STATE_OPENED = 'opened';
+    const STATE_OPEN = 'opened'; // todo fix value
     const STATE_MERGED = 'merged';
     const STATE_CLOSED = 'closed';
+
+    /**
+     * @deprecated
+     */
+    const STATE_OPENED = self::STATE_OPEN;
 
     /**
      * @var int

@@ -47,31 +47,31 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
      */
     private function createPushEvent($data)
     {
-        $event           = new PushEvent();
+        $event = new PushEvent();
         $event->provider = self::NAME;
-        $event->before   = $data['before'];
-        $event->after    = $data['after'];
-        $event->ref      = $data['ref'];
+        $event->before = $data['before'];
+        $event->after = $data['after'];
+        $event->ref = $data['ref'];
 
-        $user       = new User();
-        $user->id   = $data['sender']['id'];
+        $user = new User();
+        $user->id = $data['sender']['id'];
         $user->name = $data['pusher']['name'];
 
         if (isset($data['pusher']['email'])) {
             $user->email = $data['pusher']['email'];
         }
 
-        $repository              = new Repository();
-        $repository->id          = $data['repository']['id'];
-        $repository->name        = $data['repository']['name'];
-        $repository->namespace   = $this->extractNamespace($data['repository']['full_name']);
+        $repository = new Repository();
+        $repository->id = $data['repository']['id'];
+        $repository->name = $data['repository']['name'];
+        $repository->namespace = $this->extractNamespace($data['repository']['full_name']);
         $repository->description = $data['repository']['description'];
-        $repository->homepage    = $data['repository']['homepage'];
-        $repository->url         = $data['repository']['html_url'];
+        $repository->homepage = $data['repository']['homepage'];
+        $repository->url = $data['repository']['html_url'];
 
-        $event->user       = $user;
+        $event->user = $user;
         $event->repository = $repository;
-        $event->commits    = $this->createCommits($data['commits']);
+        $event->commits = $this->createCommits($data['commits']);
 
         if (!$event->commits) {
             $event->commits[] = $this->createCommit($data['head_commit']); // fix empty commits
@@ -96,27 +96,27 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
     {
         $event = new MergeRequestEvent();
 
-        $event->provider    = self::NAME;
-        $event->id          = $data['pull_request']['id'];
-        $event->title       = $data['pull_request']['title'];
+        $event->provider = self::NAME;
+        $event->id = $data['pull_request']['id'];
+        $event->title = $data['pull_request']['title'];
         $event->description = $data['pull_request']['body'];
 
         $event->targetBranch = $data['pull_request']['base']['ref'];
         $event->sourceBranch = $data['pull_request']['head']['ref'];
-        $event->state        = $data['action'];
-        $event->createdAt    = new \DateTime($data['pull_request']['created_at']);
-        $event->updatedAt    = new \DateTime($data['pull_request']['updated_at']);
+        $event->state = $this->pullRequestState($data['pull_request']);
+        $event->createdAt = new \DateTime($data['pull_request']['created_at']);
+        $event->updatedAt = new \DateTime($data['pull_request']['updated_at']);
 
-        $user       = new User();
-        $user->id   = $data['pull_request']['user']['id'];
+        $user = new User();
+        $user->id = $data['pull_request']['user']['id'];
         $user->name = $data['pull_request']['user']['login'];
 
-        $event->user             = $user;
-        $event->repository       = $this->createRepository($data['pull_request']['base']['repo']);
+        $event->user = $user;
+        $event->repository = $this->createRepository($data['pull_request']['base']['repo']);
         $event->sourceRepository = $this->createRepository($data['pull_request']['head']['repo']);
 
         // TODO request data from $data['pull_request']['commits_url']
-        $event->lastCommit     = new Commit();
+        $event->lastCommit = new Commit();
         $event->lastCommit->id = $data['pull_request']['head']['sha'];
 
         return $event;
@@ -130,12 +130,12 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
     {
         $repository = new Repository();
 
-        $repository->id          = $data['id'];
-        $repository->name        = $data['name'];
+        $repository->id = $data['id'];
+        $repository->name = $data['name'];
         $repository->description = $data['description'];
-        $repository->namespace   = $this->extractNamespace($data['full_name']);
-        $repository->url         = $data['ssh_url'];
-        $repository->homepage    = $data['html_url'];
+        $repository->namespace = $this->extractNamespace($data['full_name']);
+        $repository->url = $data['ssh_url'];
+        $repository->homepage = $data['html_url'];
 
         return $repository;
     }
@@ -148,12 +148,12 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
     {
         $commit = new Commit();
 
-        $commit->id      = $data['id'];
+        $commit->id = $data['id'];
         $commit->message = $data['message'];
-        $commit->date    = new \DateTime($data['timestamp']);
+        $commit->date = new \DateTime($data['timestamp']);
 
-        $user        = new User();
-        $user->name  = $data['author']['name'];
+        $user = new User();
+        $user->name = $data['author']['name'];
         $user->email = $data['author']['email'];
 
         $commit->author = $user;
@@ -168,5 +168,22 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
     private function extractNamespace($fullName)
     {
         return array_shift(explode('/', $fullName));
+    }
+
+    /**
+     * @param array $pullRequest
+     * @return string
+     */
+    private function pullRequestState(array $pullRequest)
+    {
+        if ($pullRequest['state'] == 'open') {
+            return MergeRequestEvent::STATE_OPEN;
+        }
+
+        if ($pullRequest['merged_at']) {
+            return MergeRequestEvent::STATE_MERGED;
+        }
+
+        return MergeRequestEvent::STATE_CLOSED;
     }
 }
