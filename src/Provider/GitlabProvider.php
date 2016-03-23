@@ -59,7 +59,7 @@ class GitlabProvider extends AbstractProvider implements ProviderInterface
      */
     private function createIssueEvent(array $data)
     {
-
+        // todo
     }
 
     /**
@@ -125,10 +125,11 @@ class GitlabProvider extends AbstractProvider implements ProviderInterface
 
         $repository              = new Repository();
         $repository->id          = $data['project_id'];
-        $repository->name        = $data['repository']['name'];
-        $repository->description = $data['repository']['description'];
-        $repository->homepage    = $data['repository']['homepage'];
-        $repository->url         = $data['repository']['url'];
+        $repository->name        = $data['project']['name'];
+        $repository->namespace   = $data['project']['namespace'];
+        $repository->description = $data['project']['description'];
+        $repository->homepage    = $data['project']['homepage'];
+        $repository->url         = $data['project']['url'];
 
         $event->user       = $user;
         $event->repository = $repository;
