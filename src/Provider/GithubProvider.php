@@ -167,7 +167,9 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
      */
     private function extractNamespace($fullName)
     {
-        return array_shift(explode('/', $fullName));
+        $parts = explode('/', $fullName);
+
+        return $parts[0];
     }
 
     /**
