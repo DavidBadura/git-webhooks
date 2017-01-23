@@ -84,6 +84,20 @@ class GithubProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('0d1a26e67d8f5eaf1f6ba5c57fc3c7d91ac0fd1c', $event->lastCommit->id);
     }
 
+    public function testPingRequest()
+    {
+        $request = $this->createRequest('ping', __DIR__ . '/_files/github/ping.json');
+
+        $provider = new GithubProvider();
+
+        /** @var MergeRequestEvent $event */
+        $event = $provider->create($request);
+
+        $this->assertInstanceOf('DavidBadura\GitWebhooks\Event\PingEvent', $event);
+        $this->assertEquals('simpspector', $event->repository->name);
+        $this->assertEquals('simpspector', $event->repository->namespace);
+    }
+
     /**
      * @param string $event
      * @param string $file

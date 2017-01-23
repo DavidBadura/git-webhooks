@@ -4,6 +4,7 @@ namespace DavidBadura\GitWebhooks\Provider;
 
 use DavidBadura\GitWebhooks\Event\AbstractEvent;
 use DavidBadura\GitWebhooks\Event\MergeRequestEvent;
+use DavidBadura\GitWebhooks\Event\PingEvent;
 use DavidBadura\GitWebhooks\Event\PushEvent;
 use DavidBadura\GitWebhooks\Struct\Commit;
 use DavidBadura\GitWebhooks\Struct\Repository;
@@ -23,6 +24,8 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
     {
         $data = $this->getData($request);
         switch ($request->headers->get('X-Github-Event')) {
+            case 'ping':
+                return $this->createPingEvent($data);
             case 'push':
                 return $this->createPushEvent($data);
             case 'pull_request':
@@ -39,6 +42,19 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
     public function support(Request $request)
     {
         return $request->headers->has('X-GitHub-Event');
+    }
+
+    /**
+     * @param array $data
+     * @return PingEvent
+     */
+    private function createPingEvent($data)
+    {
+        $event = new PingEvent();
+        $event->provider = self::NAME;
+        $event->repository = $this->createRepository($data['repository']);
+
+        return $event;
     }
 
     /**
@@ -61,16 +77,8 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
             $user->email = $data['pusher']['email'];
         }
 
-        $repository = new Repository();
-        $repository->id = $data['repository']['id'];
-        $repository->name = $data['repository']['name'];
-        $repository->namespace = $this->extractNamespace($data['repository']['full_name']);
-        $repository->description = $data['repository']['description'];
-        $repository->homepage = $data['repository']['homepage'];
-        $repository->url = $data['repository']['html_url'];
-
         $event->user = $user;
-        $event->repository = $repository;
+        $event->repository = $this->createRepository($data['repository']);
         $event->commits = $this->createCommits($data['commits']);
 
         if (!$event->commits) {
@@ -178,7 +186,7 @@ class GithubProvider extends AbstractProvider implements ProviderInterface
      */
     private function pullRequestState(array $pullRequest)
     {
-        if ($pullRequest['state'] == 'open') {
+        if ($pullRequest['state'] === 'open') {
             return MergeRequestEvent::STATE_OPEN;
         }
 
